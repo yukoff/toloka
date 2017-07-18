@@ -61,7 +61,7 @@
   },
   "autoload": {
     "psr-4": {
-      "TorrentPier\\": "src/"
+      "TorrentPier\\": "src/php/"
     }
   },
   "minimum-stability": "stable",
