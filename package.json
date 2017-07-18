@@ -8,5 +8,21 @@
   "license": "MIT",
   "dependencies": {
     "jquery": "^3.2.1"
+  },
+  "devDependencies": {
+    "font-blast": "^0.6.1",
+    "gulp": "^3.9.1",
+    "gulp-consolidate": "^0.2.0",
+    "gulp-iconfont": "^9.0.0",
+    "gulp-less": "^3.3.2",
+    "gulp-uglify": "^3.0.0",
+    "gulp-uglifycss": "^1.0.8",
+    "semantic-ui-less": "^2.2.11",
+    "tmp": "^0.0.31",
+    "underscore": "^1.8.3"
+  },
+  "scripts": {
+    "postinstall": "npm run configure-semantic",
+    "configure-semantic": "cd ./node_modules/semantic-ui-less && ln -sf ../../src/less/theme.config"
   }
 }
