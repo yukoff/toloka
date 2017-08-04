@@ -1,5 +1,22 @@
 Опис структури БД
 
+# Документування БД
+
+Для документування планується використовувати команду `doc:build:database` (WIP), яка в свою чергу буде будувати описи таблиць/стовпців, спираючись на коментарі БД та типи даних з сутностей Doctrine. Ідея взята з публікації _["Documenting Your PostgreSQL Database"](http://www.craigkerstiens.com/2013/07/29/documenting-your-postgres-database/)_.
+
+Додавання коментаря для таблиці:
+```sql
+CREATE TABLE `table` (...) ... COMMENT 'This table is used for storing data'
+ALTER TABLE `table` COMMENT 'This table is used for storing data';
+```
+
+Додавання коментаря для стовпця:
+```sql
+ALTER TABLE `table` CHANGE `poster_id` INT NOT NULL COMMENT 'This column stores user id';
+```
+
+Детальніше - у документації MySQL щодо [`CREATE TABLE`](https://dev.mysql.com/doc/refman/5.7/en/create-table.html) та [`ALTER TABLE`](https://dev.mysql.com/doc/refman/5.7/en/alter-table.html)
+
 ## Таблиці
 
 * [`bb_ads`](bb_ads)
