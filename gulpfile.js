@@ -1,13 +1,17 @@
+'use strict';
+
 const gulp = require('gulp'),
+      defaults = require('defaults'),
       path = require('path'),
       fs = require('fs'),
       less = require('gulp-less'),
       uglify = require('gulp-uglify'),
       uglifycss = require('gulp-uglifycss'),
       consolidate = require('gulp-consolidate'),
-      iconfont = require('gulp-iconfont'),
-      fontBlast = require('font-blast'),
-      tmp = require('tmp');
+      fontBlast = require('gulp-font-blast'),
+      iconfont = require('gulp-iconfont');
+
+const requiredIcons = ['magnet', 'empty.star', 'thumbs.up', 'download'];
 
 /**
  * Font settings
@@ -29,109 +33,66 @@ const iconFontPath = path.join(semanticThemePath, 'assets', 'fonts');
  */
 const timestamp = Math.round(Date.now() / 1000)
 
+/**
+ * This is needed for mapping glyphs and codepoints.
+ */
+function mapGlyphs (glyph) {
+	console.log(glyph);
+  return {name: glyph.name, codepoint: glyph.unicode[0].charCodeAt(0)};
+}
+
+/**
+ * Gulp tasks
+ */
 gulp.task('iconfont', function () {
-   return gulp.src(`${iconFontPath}/*.svg`)
-        .pipe(iconfont({
-            fontName,
-            formats: ['eot', 'svg'],
-            timestamp,
-            fontHeight: 1001,
-            normalize: true,
-            //appendCodepoints: true,
-            //appendUnicode: false,
-            //centerHorizontally: true
-        }))
-        .on('glyphs', /*function (glyphs, options) {*/ (glyphs) => {
-            const options = {
-                className,
-                fontName,
-                //fontPath: '../fonts/', // set path to font (from your CSS file if relative)
-                fontDate: new Date().getTime(),
-                glyphs: glyphs.map(mapGlyphs)
-            }
-            console.log(glyphs, options);
-            gulp.src(`src/css/${template}.css`)
-                .pipe(consolidate('underscore', options/*{
-                    glyphs: glyphs,
-                    fontName: options.fontName,
-                    fontDate: new Date().getTime()
-                }*/))
-                .pipe(gulp.dest('iconfont'));
+  var iconsConfig = `${semanticThemePath}/elements/icon.overrides`;
+  // FIXME: better var name
+  var svgFontContent = fs.readFileSync(iconsConfig, 'utf-8');
+  // i.icon.search:before { content: "\f002"; }
+  var definitions = svgFontContent.match(/i\.icon\.(.*?):[\s\S]+?content.*?['"].*?['"]/g),
+      convertFilenames = {};
 
-            /*gulp.src('src/html/${template}.html')
-                .pipe(consolidate('underscore', {
-                    glyphs: glyphs,
-                    fontName: options.fontName
-                }))
-                .pipe(gulp.dest('iconfont'));*/
-        })
-        .pipe(gulp.dest('iconfont'));
-});
+  definitions.forEach(function (line) {
+      var charName = line.match(/i\.icon\.(.*?):/)[1],
+          charCode = line.match(/content.*?['"](.*?)['"]/)[1];
+      convertFilenames[charCode.replace('\\', '')] = charName;
+  });
 
-gulp.task('extract-icons', function () {
-    var iconsConfig = `${semanticThemePath}/elements/icon.overrides`;
-    var svgFontContent = fs.readFileSync(iconsConfig, "utf-8");
-    // i.icon.search:before { content: "\f002"; }
-    var definitions = svgFontContent.match(/i\.icon\.(.*?):[\s\S]+?content.*?['"].*?['"]/g),
-        convertFilenames = {};
+  var iconfontConfig = {
+    className,
+    fontHeight: 1001,
+    fontDate: new Date().getTime(),
+    fontName,
+    fontPath: '../fonts/',
+    formats: ['ttf', 'eot', 'woff', 'woff2', 'svg'],
+    normalize: true,
+    timestamp,
+    //appendCodepoints: true,
+    //appendUnicode: false,
+    //centerHorizontally: true
+  };
 
-    definitions.forEach(function (line) {
-        var charName = line.match(/i\.icon\.(.*?):/)[1],
-            charCode = line.match(/content.*?['"](.*?)['"]/)[1];
-        convertFilenames[charCode.replace('\\', '')] = charName;
-    });
-    console.log(convertFilenames);
+  return gulp.src(`${iconFontPath}/*.svg`)
+    .pipe(fontBlast({filenames: convertFilenames, icons: requiredIcons}))
+    .pipe(iconfont(iconfontConfig))
+    .on('glyphs', (glyphs, opt) => {
+      opt = opt || {};
 
-//    tmp.setGracefulCleanup();
-    var tmpObj = tmp.dirSync({ mode: 0750, prefix: 'font-blast-tmp-'/*, unsafeCleanup: true*/ });
-    var tmpDir = tmpObj.name;
-//    tmp.dir({ mode: 0750, prefix: 'font-blast-tmp-' }, function (err, tmpDir, cleanupCallback) {
-//        if (err) throw err;
-        fontBlast(`${iconFontPath}/icons.svg`, tmpDir, {
-            filenames: convertFilenames,
-        });
-        console.log("Dir: ", tmpDir);
-        return gulp.src(`${tmpDir}/svg/*.svg`)
-            .pipe(iconfont({
-                fontName,
-                formats: ['eot', 'svg'],
-                timestamp,
-                fontHeight: 1001,
-                normalize: true,
-            }))
-            .on('glyphs', /*function (glyphs, options) {*/ (glyphs) => {
-                const options = {
-                    className,
-                    fontName,
-                    //fontPath: '../fonts/', // set path to font (from your CSS file if relative)
-                    fontDate: new Date().getTime(),
-                    glyphs: glyphs.map(mapGlyphs)
-                }
-                console.log(glyphs, options);
-                gulp.src(`src/css/${template}.css`)
-                    .pipe(consolidate('underscore', options/*{
-                        glyphs: glyphs,
-                        fontName: options.fontName,
-                        fontDate: new Date().getTime()
-                    }*/))
-                    .pipe(gulp.dest('iconfont'));
+      const options = defaults(opt, {
+          glyphs: glyphs.map(mapGlyphs)
+      });
 
-                /*gulp.src('src/html/${template}.html')
-                    .pipe(consolidate('underscore', {
-                        glyphs: glyphs,
-                        fontName: options.fontName
-                    }))
-                    .pipe(gulp.dest('iconfont'));*/
-            })
-            .pipe(gulp.dest('iconfont'))
-            .on('end', function() {
-                console.log('ending');
-//                tmpObj.removeCallback();
-            });
-//            .on('end', cleanupCallback);
-//        cleanupCallback();
-//    });
-//    tmpObj.removeCallback();
+      console.log(glyphs, options);
+
+      gulp.src(`src/css/${template}.css`)
+        .pipe(consolidate('underscore', options))
+        .pipe(gulp.dest('public/fonts'));
+
+      /*gulp.src('src/html/${template}.html')
+        .pipe(consolidate('underscore', options))
+        .pipe(gulp.dest('iconfont'));*/
+    })
+    .pipe(gulp.dest('public/fonts'));
 });
 
 /**
@@ -150,12 +111,3 @@ gulp.task('less', function () {
  * build and minify js
  */
 // TODO
-
-/**
- * This is needed for mapping glyphs and codepoints.
- */
-function mapGlyphs (glyph) {
-	console.log(glyph);
-  return { name: glyph.name, codepoint: glyph.unicode[0].charCodeAt(0) }
-}
-
