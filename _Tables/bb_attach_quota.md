@@ -1,25 +1,21 @@
 ## Columns
-| Column           | Data Type          | AI? | NULL? | Doctrine Data Type | FK |
-|------------------|--------------------|:---:|:-----:|--------------------|:--:|
-| `user_id`        | INT(10)            | | - | integer
-| `group_id`       | INT(10) UNSIGNED   | | - | integer, unsigned
-| `quota_type`     | SMALLINT(5)        | | - | smallint, unsigned
-| `quota_limit_id` | INT(10) UNSIGNED   | | - | integer, unsigned
 
-## Column Defaults
-| Column       | Default Value |
-|-------------:|:--------------|
-| `user_id`    | `'0'`
-| `group_id`   | `'0'`
-| `quota_type` | `'0'`
+| Column | Doctrine Data Type | Default Value | AI? | NULL? | Column DDL |
+| ------ | ------------------ | ------------- | :-: | :---: | ---------- |
+| `quota_limit_id` | `integer` | `NULL` |  | - | `INT UNSIGNED NOT NULL` |
+| `user_id` | `integer` | `0` |  | - | `INT DEFAULT 0 NOT NULL` |
+| `group_id` | `integer` | `0` |  | - | `INT UNSIGNED DEFAULT 0 NOT NULL` |
+| `quota_type` | `smallint` | `0` |  | - | `SMALLINT DEFAULT 0 NOT NULL` |
 
 ## Indexes
-| Index Type  | Index Name | Index Columns |
-|-------------|------------|---------------|
-| PRIMARY KEY | PRIMARY    | quota_limit_id
-| Non-Unique  | quota_type | quota_type
+
+| Index Type | Index Name | Index Columns |
+| ---------- | ---------- | ------------- |
+| `PRIMARY KEY` | `PRIMARY` | `(quota_limit_id)` |
+| `INDEX` | `quota_type` | `(quota_type)` |
 
 # Пропоновані зміни
+
 ## Indexes
 | Index Type | Index Name | Index Columns |
 |------------|------------|---------------|
