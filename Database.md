@@ -1,6 +1,6 @@
-Опис структури БД
+Опис структури бази даних, рекомендації щодо документування, процес роботи з базою (наприклад, створення зміни) тощо.
 
-# Документування БД
+## Документування БД
 
 Для документування планується використовувати команду `doc:build:database` (WIP), яка в свою чергу буде будувати описи таблиць/стовпців, спираючись на коментарі БД та типи даних з сутностей Doctrine. Ідея взята з публікації _["Documenting Your PostgreSQL Database"](http://www.craigkerstiens.com/2013/07/29/documenting-your-postgres-database/)_.
 
@@ -17,7 +17,13 @@ ALTER TABLE `table` CHANGE `poster_id` INT NOT NULL COMMENT 'This column stores 
 
 Детальніше - у документації MySQL щодо [`CREATE TABLE`](https://dev.mysql.com/doc/refman/5.7/en/create-table.html) та [`ALTER TABLE`](https://dev.mysql.com/doc/refman/5.7/en/alter-table.html)
 
-## Таблиці
+## Створення зміни в БД
+
+> В процесі
+
+## Структура БД
+
+### Таблиці
 
 * [`bb_attach_quota`](bb_attach_quota)
 * [`bb_attachments`](bb_attachments)
