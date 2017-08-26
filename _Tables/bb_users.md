@@ -53,7 +53,7 @@
 | `user_allow_passkey` | `boolean` | `1` |  | - | `TINYINT(1) DEFAULT '1' NOT NULL` |
 | `user_from_flag` | `string` | `NULL` |  | + | `VARCHAR(25) DEFAULT NULL COLLATE utf8_general_ci` |
 | `user_allowdefaultavatar` | `boolean` | `1` |  | - | `TINYINT(1) DEFAULT '1' NOT NULL` |
-| `user_warnings` | `boolean` | `0` |  | - | `TINYINT(1) DEFAULT '0' NOT NULL` |
+| `user_warnings` | `smallint` | `0` |  | - | `SMALLINT DEFAULT 0 NOT NULL` |
 | `user_banned` | `boolean` | `0` |  | - | `TINYINT(1) DEFAULT '0' NOT NULL` |
 | `bt_tor_browse_set` | `text` | `NULL` |  | + | `TEXT DEFAULT NULL COLLATE utf8_general_ci` |
 | `user_unread_topics` | `text` | `NULL` |  | + | `TEXT DEFAULT NULL COLLATE utf8_general_ci` |
